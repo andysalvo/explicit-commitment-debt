@@ -29,6 +29,7 @@ import argparse
 import ast
 import json
 import os
+import random
 import re
 import subprocess
 import sys
@@ -40,13 +41,19 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-TASK_DIST = REPO / "experiments" / "task_distribution.json"
+DEFAULT_TASK_DIST = REPO / "experiments" / "task_distribution.json"
 DATA_DIR = REPO / "data"
 SCHEMA_VERSION = "1"
 MODEL = "gpt-4.1-mini"
 TEMPERATURE = 0.0
 MAX_TOKENS = 1024
 SANDBOX_TIMEOUT_SECONDS = 5
+
+# Retry policy for transient OpenAI API errors. Retries on network/transport
+# errors and on HTTP 429/500/502/503/504. Does NOT retry on 4xx (except 429),
+# which would indicate a request-shape problem the harness should surface.
+MAX_RETRIES = 3
+RETRY_BACKOFF_BASE_SECONDS = 1.5  # 1.5, 3, 6 seconds
 
 # ---------------------------------------------------------------------------
 # FROZEN PROMPTS (must match PREREGISTRATION_ADDENDUM_001.md verbatim)
@@ -118,7 +125,9 @@ Agent output:
 
 
 def call_openai(system: str, user: str, *, max_tokens: int = MAX_TOKENS) -> tuple[str, dict]:
-    """Returns (content, usage_dict). Raises on HTTP error."""
+    """Returns (content, usage_dict). Retries on transient errors (network,
+    HTTP 429/5xx) up to MAX_RETRIES times with exponential backoff. Raises on
+    persistent failure or non-transient HTTP errors (e.g., 400 bad request)."""
     api_key = os.environ.get("OPENAI_API_KEY") or _read_env_key()
     if not api_key:
         raise RuntimeError("OPENAI_API_KEY not set")
@@ -131,18 +140,38 @@ def call_openai(system: str, user: str, *, max_tokens: int = MAX_TOKENS) -> tupl
         "temperature": TEMPERATURE,
         "max_tokens": max_tokens,
     }).encode()
-    req = urllib.request.Request(
-        "https://api.openai.com/v1/chat/completions",
-        data=body,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=120) as r:
-        resp = json.load(r)
-    return resp["choices"][0]["message"]["content"], resp.get("usage", {})
+
+    last_err: Exception | None = None
+    for attempt in range(MAX_RETRIES + 1):
+        req = urllib.request.Request(
+            "https://api.openai.com/v1/chat/completions",
+            data=body,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as r:
+                resp = json.load(r)
+            return resp["choices"][0]["message"]["content"], resp.get("usage", {})
+        except urllib.error.HTTPError as e:
+            # Retry only on transient HTTP statuses.
+            if e.code in (429, 500, 502, 503, 504) and attempt < MAX_RETRIES:
+                last_err = e
+                time.sleep(RETRY_BACKOFF_BASE_SECONDS * (2 ** attempt))
+                continue
+            raise
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            # Network-level transient errors.
+            if attempt < MAX_RETRIES:
+                last_err = e
+                time.sleep(RETRY_BACKOFF_BASE_SECONDS * (2 ** attempt))
+                continue
+            raise
+    # Unreachable; loop above either returns or raises.
+    raise RuntimeError(f"call_openai exhausted retries: {last_err}")
 
 
 def _read_env_key() -> str | None:
@@ -159,11 +188,61 @@ def _read_env_key() -> str | None:
 # ---------------------------------------------------------------------------
 
 
-def extract_largest_def(agent_output: str) -> tuple[str | None, str | None]:
-    """Return (function_source, function_name) for the largest top-level def, or (None, None)."""
-    # Strip code fences if present.
+def expected_function_names(test_list: list[str]) -> list[str]:
+    """Parse MBPP test assertions to find which function name(s) they call.
+
+    MBPP tests look like: assert min_cost([[1,2],[3,4]], 1, 1) == 7
+    We parse each assertion as Python and walk the AST to find Call nodes whose
+    function is a Name (i.e., a bare function reference). The names are returned
+    in order of appearance, deduplicated, most-frequent first.
+    """
+    from collections import Counter
+    counts: Counter[str] = Counter()
+    for assertion in test_list:
+        try:
+            tree = ast.parse(assertion)
+        except SyntaxError:
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                counts[node.func.id] += 1
+    return [name for name, _ in counts.most_common()]
+
+
+def extract_function(agent_output: str, expected_names: list[str]) -> tuple[str | None, str | None]:
+    """Return (full_program_source, picked_function_name).
+
+    Strategy:
+      1. Collect every top-level def from the agent's output AND from any code
+         fences inside it.
+      2. If any def's name matches one of the expected names from the test
+         assertions, prefer that def (and include all sibling top-level defs in
+         the same code block, since helpers may be needed).
+      3. Otherwise fall back to the largest top-level def by character count.
+
+    Returning the full program source means helper functions defined alongside
+    the target are also available to the test runner.
+    """
     fenced = re.findall(r"```(?:python)?\s*\n(.*?)```", agent_output, re.DOTALL)
-    candidates = [agent_output] + fenced
+    candidates: list[str] = [agent_output] + fenced
+
+    # First pass: find any candidate whose top-level defs include an expected name.
+    expected_set = set(expected_names)
+    if expected_set:
+        for src in candidates:
+            try:
+                tree = ast.parse(src)
+            except SyntaxError:
+                continue
+            top_def_names = {n.name for n in tree.body if isinstance(n, ast.FunctionDef)}
+            hit = expected_set & top_def_names
+            if hit:
+                # Use the WHOLE candidate (so helpers are included), and report
+                # the picked function name from the expected set.
+                picked = next((n for n in expected_names if n in hit), next(iter(hit)))
+                return src, picked
+
+    # Fallback: largest top-level def by char count.
     best_src, best_name, best_size = None, None, 0
     for src in candidates:
         try:
@@ -172,16 +251,20 @@ def extract_largest_def(agent_output: str) -> tuple[str | None, str | None]:
             continue
         for node in tree.body:
             if isinstance(node, ast.FunctionDef):
-                # Re-extract this node's source from the candidate text.
                 try:
                     fn_src = ast.get_source_segment(src, node) or ""
                 except Exception:
                     fn_src = ""
                 if len(fn_src) > best_size:
                     best_size = len(fn_src)
-                    best_src = fn_src
+                    best_src = src  # use whole candidate, not just this fn
                     best_name = node.name
     return best_src, best_name
+
+
+# Backwards-compat shim for any code that still calls the old name.
+def extract_largest_def(agent_output: str) -> tuple[str | None, str | None]:
+    return extract_function(agent_output, expected_names=[])
 
 
 def run_sandbox(function_source: str, test_setup_code: str, test_list: list[str]) -> str:
@@ -332,7 +415,8 @@ def run_one_trace(task: dict, condition: int, trace_index: int) -> dict:
         }
 
     # Step 2: function extraction + sandbox
-    fn_src, fn_name = extract_largest_def(agent_output)
+    expected = expected_function_names(task["test_list"])
+    fn_src, fn_name = extract_function(agent_output, expected)
     verification_result = run_sandbox(fn_src or "", task.get("test_setup_code", ""), task["test_list"])
     if verification_result == "NO_FUNCTION_EXTRACTED":
         return {
@@ -415,62 +499,104 @@ def run_one_trace(task: dict, condition: int, trace_index: int) -> dict:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="ECD behavioral pilot harness.")
+    ap = argparse.ArgumentParser(description="ECD experiment harness (pilot or canonical).")
     ap.add_argument("--n-per-condition", type=int, default=20)
+    ap.add_argument("--task-distribution", type=Path, default=DEFAULT_TASK_DIST,
+                    help="Path to the task distribution JSON. Pilot uses task_distribution.json; "
+                         "canonical run uses task_distribution_canonical.json.")
     ap.add_argument("--out-c0", type=Path, default=DATA_DIR / "pilot_condition_0.jsonl")
     ap.add_argument("--out-c1", type=Path, default=DATA_DIR / "pilot_condition_1.jsonl")
+    ap.add_argument("--interleave", action="store_true",
+                    help="Interleave conditions trace-by-trace (recommended for canonical run). "
+                         "Removes the temporal block-design confound.")
+    ap.add_argument("--trace-id-prefix", default="pilot",
+                    help="Prefix for trace_id field (e.g., 'pilot' or 'canonical').")
     args = ap.parse_args()
 
     args.out_c0.parent.mkdir(parents=True, exist_ok=True)
     if args.out_c0.exists() or args.out_c1.exists():
         print(
-            f"REFUSING TO RUN: one of the pilot output files already exists. "
+            f"REFUSING TO RUN: one of the output files already exists.\n"
+            f"  {args.out_c0}\n  {args.out_c1}\n"
             f"Delete or move them first.",
             file=sys.stderr,
         )
         return 1
 
-    tasks = json.loads(TASK_DIST.read_text())["tasks"]
-    print(f"Loaded {len(tasks)} tasks. Running {args.n_per_condition} per condition.")
+    tasks = json.loads(args.task_distribution.read_text())["tasks"]
+    print(f"Loaded {len(tasks)} tasks from {args.task_distribution.name}. "
+          f"Running {args.n_per_condition} per condition. "
+          f"Interleave: {args.interleave}")
+    print(f"  out_c0: {args.out_c0}")
+    print(f"  out_c1: {args.out_c1}")
     print()
 
-    for condition, out_path in [(0, args.out_c0), (1, args.out_c1)]:
-        print(f"=== Condition {condition} → {out_path.name} ===")
-        for i in range(args.n_per_condition):
-            task = tasks[i]  # presentation_order is fixed
-            t0 = time.time()
-            try:
-                trace = run_one_trace(task, condition, i)
-            except Exception as e:
-                trace = {
-                    "schema_version": SCHEMA_VERSION,
-                    "trace_id": f"pilot-c{condition}-{i:04d}",
-                    "condition": condition,
-                    "started_at": now_iso(),
-                    "completed_at": now_iso(),
-                    "excluded": True,
-                    "exclusion_reason": f"harness_uncaught: {type(e).__name__}: {e}",
-                    "exclusion_timestamp": now_iso(),
-                    "claims": [],
-                    "task_id": task["task_id"],
-                    "verification_result": None,
-                    "extracted_function_name": None,
-                    "agent_output": None,
-                }
-            with out_path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(trace) + "\n")
-            dt = time.time() - t0
-            d = sum(1 for c in trace["claims"] if c["status"] == "UNRESOLVED")
-            tag = "EXCL" if trace["excluded"] else f"D={d}"
-            print(
-                f"  c{condition} #{i:02d} task={task['task_id']:>4} "
-                f"verif={trace.get('verification_result','-'):<22} "
-                f"{tag}  {dt:.1f}s"
-                + (f"  reason={trace.get('exclusion_reason')}" if trace["excluded"] else "")
-            )
-        print()
+    if args.n_per_condition > len(tasks):
+        print(
+            f"ERROR: --n-per-condition ({args.n_per_condition}) exceeds task count ({len(tasks)})",
+            file=sys.stderr,
+        )
+        return 2
 
-    print("pilot complete")
+    out_paths = {0: args.out_c0, 1: args.out_c1}
+
+    # Build the dispatch order. Each entry is (condition, trace_index_within_condition).
+    # In block mode, all c0 traces run first, then all c1.
+    # In interleave mode, conditions alternate trace-by-trace: (0,0),(1,0),(0,1),(1,1),...
+    # Both modes use the same task index for matched traces across conditions, so the
+    # paired structure (same MBPP problem under both conditions) is preserved.
+    plan: list[tuple[int, int]] = []
+    if args.interleave:
+        for i in range(args.n_per_condition):
+            plan.append((0, i))
+            plan.append((1, i))
+    else:
+        for condition in (0, 1):
+            for i in range(args.n_per_condition):
+                plan.append((condition, i))
+
+    print(f"=== Dispatching {len(plan)} traces ({'interleaved' if args.interleave else 'block'}) ===")
+    n_done = 0
+    for (condition, trace_idx) in plan:
+        task = tasks[trace_idx]
+        t0 = time.time()
+        try:
+            trace = run_one_trace(task, condition, trace_idx)
+        except Exception as e:
+            trace = {
+                "schema_version": SCHEMA_VERSION,
+                "trace_id": f"{args.trace_id_prefix}-c{condition}-{trace_idx:04d}",
+                "condition": condition,
+                "started_at": now_iso(),
+                "completed_at": now_iso(),
+                "excluded": True,
+                "exclusion_reason": f"harness_uncaught: {type(e).__name__}: {e}",
+                "exclusion_timestamp": now_iso(),
+                "claims": [],
+                "task_id": task["task_id"],
+                "verification_result": None,
+                "extracted_function_name": None,
+                "agent_output": None,
+            }
+        # Override trace_id with the configured prefix.
+        trace["trace_id"] = f"{args.trace_id_prefix}-c{condition}-{trace_idx:04d}"
+
+        with out_paths[condition].open("a", encoding="utf-8") as f:
+            f.write(json.dumps(trace) + "\n")
+        n_done += 1
+        dt = time.time() - t0
+        d = sum(1 for c in trace["claims"] if c["status"] == "UNRESOLVED")
+        tag = "EXCL" if trace["excluded"] else f"D={d}"
+        print(
+            f"  [{n_done:>4}/{len(plan)}] c{condition} #{trace_idx:04d} "
+            f"task={task['task_id']:>4} "
+            f"verif={trace.get('verification_result','-'):<22} "
+            f"{tag}  {dt:.1f}s"
+            + (f"  reason={trace.get('exclusion_reason')}" if trace["excluded"] else "")
+        )
+
+    print()
+    print("run complete")
     return 0
 
 

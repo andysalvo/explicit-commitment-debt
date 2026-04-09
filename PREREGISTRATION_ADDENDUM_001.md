@@ -114,8 +114,8 @@ Agent output:
 
 ### Verification (the deterministic resolution mechanism)
 
-- After the agent's output is captured, the harness extracts the function from the agent's output by parsing the largest top-level `def` block in the response.
-- The harness runs the extracted function against the MBPP problem's canonical test cases in a sandboxed Python subprocess with a 5-second wall-clock timeout and no network access.
+- After the agent's output is captured, the harness extracts the function from the agent's output by parsing the agent's text and any fenced code blocks for top-level `def` declarations and selecting the function whose name matches the function being called in the MBPP test assertions. If no name match exists, it falls back to the largest top-level `def` by character count.
+- The harness runs the extracted function (and any sibling helper functions defined in the same code block) against the MBPP problem's canonical test cases in a Python subprocess with a 5-second wall-clock timeout. **The subprocess is not a security sandbox**: there is no network firewall, no filesystem isolation, and no capability restriction beyond the wall-clock timeout. MBPP problems are pure-Python algorithmic tasks released by Google under CC BY 4.0 and present minimal practical risk, but this experiment makes no formal claim of execution isolation. A future replication on untrusted task corpora should add real sandboxing (e.g., gVisor, Docker, or a seccomp jail).
 - The deterministic verification result is recorded in the trace as a separate field `verification_result`, taking exactly one of these values: `PASS`, `FAIL`, `TIMEOUT`, `RUNTIME_ERROR`, `NO_FUNCTION_EXTRACTED`. This is the ground truth and is NOT a claim.
 
 ### Claim status mapping rule (frozen)
