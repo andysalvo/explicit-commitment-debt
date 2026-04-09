@@ -88,3 +88,11 @@ For this trace, D = 1.0 (one UNRESOLVED claim with weight 1.0).
 ## Schema versioning
 
 If a future experiment requires a richer trace schema (e.g., per-claim provenance chains, adversarial labels, etc.), bump `schema_version` to `"2"` and write a new analysis script. The original `"1"` schema and the original analysis script remain frozen and reference the original preregistration.
+
+## Preregistration history (schema v1)
+
+| Version | OSF Registration | Timestamp (UTC) | Pinned analysis commit |
+|---|---|---|---|
+| 1 | [osf.io/az6r3](https://osf.io/az6r3/) | 2026-04-09T21:51:48 | `986423316badce6a670c84acb35f663a0353602d` |
+
+The pinned commit's `tests/preregistered_analysis.py` has SHA-256 `0f3cf9d4512be12d618a7bf01ba0c5f7f7d2c79e919d03a05583429024c046f2`. The analysis script self-hashes its own source on every run and writes the hash into `results/canonical_result.json`, so any post-registration modification is detectable.

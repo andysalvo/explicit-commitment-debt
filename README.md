@@ -2,6 +2,8 @@
 
 A trace-level audit primitive for human-in-the-loop multi-agent decision systems. Makes "no silent inference" a runtime error instead of a design principle.
 
+> **Pre-registered.** OSF: [osf.io/az6r3](https://osf.io/az6r3/) · timestamped 2026-04-09T21:51:48 UTC · pinned analysis: [`tests/preregistered_analysis.py`](tests/preregistered_analysis.py) at commit `9864233`. The analysis script is frozen and self-hashing; any post-registration modification is detectable.
+
 ## What this is
 
 ECD is a scalar `D = count(UNRESOLVED claims)` over a decision trace, where:
