@@ -15,11 +15,14 @@ The implementation is a 24-line TypeScript class. Equivalent Python and Rust imp
 
 ## What this is NOT
 
-**ECD is not a new conserved quantity, and it is not "the scalar of agency."** The prior art for both broad claims is well-established:
+**ECD is not a new conserved quantity, and it is not "the scalar of agency," and it does not prevent or measure LLM hallucination.** The prior art and adjacent work for these claims is well-established:
 
 - The cardinality of an active-commitments set is the standard formal object in **commitment machines** (Singh 2000; Yolum & Singh 2002).
 - A formal scalar of agency in AI is **empowerment** (Klyubin, Polani & Nehaniv 2005), and **maximizing human empowerment** is the alignment proposal of Salge & Polani 2017.
 - The phenomenon ECD attempts to measure is **gradual disempowerment**, named and defined by Kulveit, Douglas, Ammann, Turan, Krueger, and Duvenaud (ICML 2025, [arXiv:2501.16946](https://arxiv.org/abs/2501.16946)).
+- A complete constitutional runtime governance framework already exists: **CORE** — the 92-rule, 7-engine system for governing AI coding agents. ECD is not that. ECD is a 24-line primitive that CORE-class systems could embed, not a replacement.
+- The closest published conceptual neighbor is the **Deterministic Commitment Layer** proposal (GreaterWrong, 2026) — a generalized commitment-layer architecture for model output authorization. ECD is a specific instance of that family, narrowed to the human-claim resolution side and implemented as a runtime throw.
+- **Hallucination prevention happens at generation time**, not at claim resolution time. ECD does not modify model activations, does not block hallucinated outputs, and does not measure hallucination rate. Tools that do operate at the activation layer (e.g., Mentat) are a different technical category. ECD operates on the audit trail after the agent has already produced output.
 
 ECD is a **scoped adaptation**: an asymmetric (human-debtor / governance-creditor) cardinality measure of unresolved commitments, applied to the claim-resolution traces of modern LLM agent stacks, with a runtime-checkable type signature for the "no silent inference" rule.
 
@@ -82,12 +85,19 @@ Any paper, blog post, or talk that uses ECD must cite at minimum:
 - **Salge, C. & Polani, D.** (2017). *Empowerment as Replacement for the Three Laws of Robotics.* Frontiers in Robotics and AI 4.
 - **Kulveit, J., Douglas, R., Ammann, N., Turan, D., Krueger, D. & Duvenaud, D.** (2025). *Gradual Disempowerment.* ICML 2025. [arXiv:2501.16946](https://arxiv.org/abs/2501.16946).
 
+Strongly recommended (contemporary landscape):
+
+- **CORE — Constitutional Governance Runtime** (GitHub project, 2025). The most direct example of runtime-enforced governance for AI coding agents (92 rules, 7 enforcement engines, INTERPRET → PLAN → GENERATE → VALIDATE → STYLE CHECK → EXECUTE pipeline). ECD is not a competitor — ECD is a primitive that systems like CORE could embed.
+- **"Deterministic Commitment Layer"** (GreaterWrong post, 2026). The closest contemporaneous conceptual neighbor: a generalized proposal for commitment-layer architecture in AI governance. ECD is a specific runtime implementation of one slice of that proposal.
+- **GAIA** — Governance-First Agency Framework (2025). For "authorization boundaries with explicit escalation paths" in LLM-human B2B negotiation. ECD's `UNABLE_TO_CHECK` throw is conceptually adjacent to GAIA's escalation path; cite if discussing authorization boundaries.
+
 Additional adjacent work referenced in `ANNOTATED.md`:
 
 - Haggard & Chambon (2012) on intentional binding and sense of agency.
 - Fischer & Ravizza (1998), *Responsibility and Control*.
 - Aghion & Tirole (1997), *Formal and Real Authority in Organizations*.
 - Bai et al. (2022), *Constitutional AI: Harmlessness from AI Feedback*.
+- AEMA (2026), verifiable multi-agent evaluation framework — for traceable evaluation context.
 
 ## License
 

@@ -2,6 +2,36 @@
 
 A line-by-line walkthrough of the TypeScript primitive in `src/ecd.ts`, the prior art it builds on, and the specific reason this exists as a separate artifact.
 
+## Position in the research landscape
+
+**ECD is a minimal audit primitive, not a governance framework.**
+
+- Where **CORE** provides 92 rules and 7 enforcement engines, ECD provides 24 lines and 1 rule.
+- Where **GAIA** provides state machines and escalation paths for authorized commitments, ECD provides a scalar and a throw.
+- Where **Mentat** modifies LLM activations to suppress hallucination at generation time, ECD modifies trace state at audit time and never touches model internals.
+- Where the **Deterministic Commitment Layer** proposal generalizes commitment-layer architecture, ECD is a specific runtime implementation of one slice (the human-claim resolution side).
+- Where **AEMA** provides a multi-agent evaluation framework for testing, ECD provides a runtime audit primitive for live decision traces.
+
+ECD's narrow novelty — the claim that survives external review — is making *"no silent inference"* a runtime error via `resolveClaim()` rejecting `UNABLE_TO_CHECK`. This fills a measurement gap in the gradual-disempowerment research program (Kulveit et al. 2025) by providing an auditable scalar for unresolved human claims.
+
+**ECD does not measure agency** (empowerment does). **ECD does not prevent hallucination** (Mentat-class activation interventions do). **ECD does not enforce policy** (CORE does). **ECD does not negotiate** (GAIA does). **ECD tracks debt.** That's it. That's enough.
+
+The four things ECD claims to be, in order:
+
+1. A scoped runtime adaptation of Singh & Yolum (2002) commitment-machines semantics for human-debtor / governance-creditor asymmetry.
+2. A trace-level instrument for the gradual-disempowerment phenomenon named by Kulveit et al. (ICML 2025).
+3. A 24-line load-bearing TypeScript primitive (with Python and Rust mirrors) where the rule "no silent inference" is enforced as a thrown exception, not a design principle.
+4. A pre-registered, falsifiable empirical prediction about plane-separation governance and `D` distributions.
+
+The four things ECD does NOT claim to be:
+
+1. Not a new conserved quantity (it is a monotone-increasing ledger; calling it conserved is a physics category error).
+2. Not a measure of agency (empowerment is — Klyubin et al. 2005).
+3. Not a hallucination preventer (hallucination happens at generation time; ECD operates at claim resolution time).
+4. Not a complete governance framework (CORE is — ECD is a primitive CORE-class systems could embed).
+
+
+
 ## The 24 lines that matter
 
 ```typescript
