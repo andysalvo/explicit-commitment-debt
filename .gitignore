@@ -1,0 +1,36 @@
+# Dependency directories
+node_modules/
+__pycache__/
+*.py[cod]
+target/
+
+# Build output
+dist/
+build/
+out/
+
+# Editor / OS noise
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
+
+# Test / coverage output
+coverage/
+*.lcov
+.pytest_cache/
+.tox/
+
+# Lock files (let consumers regenerate)
+package-lock.json
+yarn.lock
+poetry.lock
+Cargo.lock
+
+# Logs
+*.log
