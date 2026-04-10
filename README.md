@@ -3,6 +3,8 @@
 A trace-level audit primitive for human-in-the-loop multi-agent decision systems. Makes "no silent inference" a runtime error instead of a design principle.
 
 > **Pre-registered.** OSF: [osf.io/az6r3](https://osf.io/az6r3/) · timestamped 2026-04-09T21:51:48 UTC · pinned analysis: [`tests/preregistered_analysis.py`](tests/preregistered_analysis.py) at commit `9864233`. The analysis script is frozen and self-hashing; any post-registration modification is detectable.
+>
+> **Canonical run complete.** 1000 traces (525 per condition) collected against 525 disjoint MBPP problems. Verdict reproduced verbatim from `results/canonical_result.json`: `INCONCLUSIVE_REPORTED_AS_NEGATIVE`. Mann-Whitney U `p = 0.000167` (significant at α=0.01) but the preregistered median ratio test failed because both group medians are 0 (ceiling effect on the control side). Full audit trail at [`RESULTS.md`](RESULTS.md). The negative result is reported per the preregistered rigor commitment.
 
 ## What this is
 

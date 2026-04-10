@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+title: "Explicit Commitment Debt: a pre-registered runtime instrument for gradual disempowerment"
+message: "If you use this instrument or the data from this experiment, please cite it using the metadata below."
+type: software
+version: 1.0.0
+date-released: 2026-04-10
+authors:
+  - family-names: Salvo
+    given-names: Andy
+    affiliation: "Penn State University"
+license: MIT
+repository-code: "https://github.com/andysalvo/explicit-commitment-debt"
+url: "https://osf.io/az6r3/"
+identifiers:
+  - type: other
+    value: "OSF az6r3"
+    description: "OSF preregistration timestamp 2026-04-09T21:51:48 UTC"
+keywords:
+  - explicit commitment debt
+  - ecd
+  - gradual disempowerment
+  - structural role separation
+  - srs
+  - multi-agent governance
+  - audit trail
+  - preregistered analysis
+  - runtime verification
+  - commitment machines
+abstract: >
+  Explicit Commitment Debt (ECD) is a scalar audit primitive defined as the count of
+  human-authored claims with status UNRESOLVED at the end of a decision trace. It
+  instruments the gradual disempowerment phenomenon at the level of individual decision
+  traces. The reference implementation is MIT licensed and provided in TypeScript,
+  Python, and Rust. The first pre-registered empirical test of whether behavioral
+  structural role separation reduces ECD on single-agent coding traces is in this
+  repository, with full audit chain from OSF preregistration timestamp through canonical
+  data files and analysis verdict.
+preferred-citation:
+  type: generic
+  title: "Explicit Commitment Debt: a pre-registered test of behavioral structural role separation in single-agent coding traces"
+  authors:
+    - family-names: Salvo
+      given-names: Andy
+      affiliation: "Penn State University"
+  year: 2026
+  month: 4
+  url: "https://github.com/andysalvo/explicit-commitment-debt"
+  identifiers:
+    - type: other
+      value: "OSF az6r3"
+      description: "Pre-registration on the Open Science Framework"
