@@ -1,0 +1,313 @@
+{
+  "schema": "ecd-mbpp-supplement-task-distribution-v1",
+  "source": "MBPP (Austin et al. 2021), https://github.com/google-research/google-research/tree/master/mbpp",
+  "purpose": "Top up the canonical run after the preregistered N=500 included gate was missed (8 c0 + 3 c1 exclusions in the canonical 500-trace run).",
+  "total_problems_in_source": 974,
+  "excluded_indices_count": 520,
+  "available_pool_size": 454,
+  "n_selected": 25,
+  "seed": 43,
+  "sampling_rule": "pilot_indices = first 20 mbpp_index values from task_distribution.json; canonical_indices = all 500 mbpp_index values from task_distribution_canonical.json; available = [i for i in range(974) if i not in (pilot_indices | canonical_indices)]; supplement = random.Random(43).sample(available, 25)",
+  "tasks": [
+    {
+      "presentation_order": 0,
+      "mbpp_index": 38,
+      "task_id": 39,
+      "text": "Write a function to check if the letters of a given string can be rearranged so that two characters that are adjacent to each other are different.",
+      "test_list": [
+        "assert rearange_string(\"aab\")==('aba')",
+        "assert rearange_string(\"aabb\")==('abab')",
+        "assert rearange_string(\"abccdd\")==('cdabcd')"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 1,
+      "mbpp_index": 327,
+      "task_id": 328,
+      "text": "Write a function to rotate a given list by specified number of items to the left direction.",
+      "test_list": [
+        "assert rotate_left([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],3,4)==[4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4]",
+        "assert rotate_left([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],2,2)==[3, 4, 5, 6, 7, 8, 9, 10, 1, 2]",
+        "assert rotate_left([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],5,2)==[6, 7, 8, 9, 10, 1, 2]"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 2,
+      "mbpp_index": 776,
+      "task_id": 777,
+      "text": "Write a python function to find the sum of non-repeated elements in a given array.",
+      "test_list": [
+        "assert find_Sum([1,2,3,1,1,4,5,6],8) == 21",
+        "assert find_Sum([1,10,9,4,2,10,10,45,4],9) == 71",
+        "assert find_Sum([12,10,9,45,2,10,10,45,10],9) == 78"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 3,
+      "mbpp_index": 840,
+      "task_id": 841,
+      "text": "Write a function to count the number of inversions in the given array.",
+      "test_list": [
+        "assert get_inv_count([1, 20, 6, 4, 5], 5) == 5",
+        "assert get_inv_count([8, 4, 2, 1], 4) == 6",
+        "assert get_inv_count([3, 1, 2], 3) == 2"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 4,
+      "mbpp_index": 181,
+      "task_id": 182,
+      "text": "Write a function to find uppercase, lowercase, special character and numeric values using regex.",
+      "test_list": [
+        "assert find_character(\"ThisIsGeeksforGeeks\") == (['T', 'I', 'G', 'G'], ['h', 'i', 's', 's', 'e', 'e', 'k', 's', 'f', 'o', 'r', 'e', 'e', 'k', 's'], [], [])",
+        "assert find_character(\"Hithere2\") == (['H'], ['i', 't', 'h', 'e', 'r', 'e'], ['2'], [])",
+        "assert find_character(\"HeyFolks32\") == (['H', 'F'], ['e', 'y', 'o', 'l', 'k', 's'], ['3', '2'], [])"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 5,
+      "mbpp_index": 499,
+      "task_id": 500,
+      "text": "Write a function to concatenate all elements of the given list into a string.",
+      "test_list": [
+        "assert concatenate_elements(['hello','there','have','a','rocky','day'] ) == '  hello there have a rocky day'",
+        "assert concatenate_elements([ 'Hi', 'there', 'How','are', 'you'] ) == '  Hi there How are you'",
+        "assert concatenate_elements([ 'Part', 'of', 'the','journey', 'is', 'end'] ) == '  Part of the journey is end'"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 6,
+      "mbpp_index": 407,
+      "task_id": 408,
+      "text": "Write a function to find k number of pairs which consist of one element from the first array and one element from the second array.",
+      "test_list": [
+        "assert k_smallest_pairs([1,3,7],[2,4,6],2)==[[1, 2], [1, 4]]",
+        "assert k_smallest_pairs([1,3,7],[2,4,6],1)==[[1, 2]]",
+        "assert k_smallest_pairs([1,3,7],[2,4,6],7)==[[1, 2], [1, 4], [3, 2], [1, 6], [3, 4], [3, 6], [7, 2]]"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 7,
+      "mbpp_index": 738,
+      "task_id": 739,
+      "text": "Write a python function to find the index of smallest triangular number with n digits.",
+      "test_list": [
+        "assert find_Index(2) == 4",
+        "assert find_Index(3) == 14",
+        "assert find_Index(4) == 45"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 8,
+      "mbpp_index": 779,
+      "task_id": 780,
+      "text": "Write a function to find the combinations of sums with tuples in the given tuple list.",
+      "test_list": [
+        "assert find_combinations([(2, 4), (6, 7), (5, 1), (6, 10)]) == [(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]",
+        "assert find_combinations([(3, 5), (7, 8), (6, 2), (7, 11)]) == [(10, 13), (9, 7), (10, 16), (13, 10), (14, 19), (13, 13)]",
+        "assert find_combinations([(4, 6), (8, 9), (7, 3), (8, 12)]) == [(12, 15), (11, 9), (12, 18), (15, 12), (16, 21), (15, 15)]"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 9,
+      "mbpp_index": 872,
+      "task_id": 873,
+      "text": "Write a function to solve the fibonacci sequence using recursion.",
+      "test_list": [
+        "assert fibonacci(7) == 13",
+        "assert fibonacci(8) == 21",
+        "assert fibonacci(9) == 34"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 10,
+      "mbpp_index": 127,
+      "task_id": 128,
+      "text": "Write a function to shortlist words that are longer than n from a given list of words.",
+      "test_list": [
+        "assert long_words(3,\"python is a programming language\")==['python','programming','language']",
+        "assert long_words(2,\"writing a program\")==['writing','program']",
+        "assert long_words(5,\"sorting list\")==['sorting']"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 11,
+      "mbpp_index": 492,
+      "task_id": 493,
+      "text": "Write a function to calculate a grid of hexagon coordinates where function returns a list of lists containing 6 tuples of x, y point coordinates.",
+      "test_list": [
+        "assert calculate_polygons(1,1, 4, 4, 3)==[[(-5.0, -4.196152422706632), (-5.0, -0.7320508075688767), (-2.0, 1.0), (1.0, -0.7320508075688767), (1.0, -4.196152422706632), (-2.0, -5.928203230275509), (-5.0, -4.196152422706632)], [(1.0, -4.196152422706632), (1.0, -0.7320508075688767), (4.0, 1.0), (7.0, -0.7320508075688767), (7.0, -4.196152422706632), (4.0, -5.928203230275509), (1.0, -4.196152422706632)], [(7.0, -4.196152422706632), (7.0, -0.7320508075688767), (10.0, 1.0), (13.0, -0.7320508075688767), (13.0, -4.196152422706632), (10.0, -5.928203230275509), (7.0, -4.196152422706632)], [(-2.0, 1.0000000000000004), (-2.0, 4.464101615137755), (1.0, 6.196152422706632), (4.0, 4.464101615137755), (4.0, 1.0000000000000004), (1.0, -0.7320508075688767), (-2.0, 1.0000000000000004)], [(4.0, 1.0000000000000004), (4.0, 4.464101615137755), (7.0, 6.196152422706632), (10.0, 4.464101615137755), (10.0, 1.0000000000000004), (7.0, -0.7320508075688767), (4.0, 1.0000000000000004)], [(-5.0, 6.196152422706632), (-5.0, 9.660254037844387), (-2.0, 11.392304845413264), (1.0, 9.660254037844387), (1.0, 6.196152422706632), (-2.0, 4.464101615137755), (-5.0, 6.196152422706632)], [(1.0, 6.196152422706632), (1.0, 9.660254037844387), (4.0, 11.392304845413264), (7.0, 9.660254037844387), (7.0, 6.196152422706632), (4.0, 4.464101615137755), (1.0, 6.196152422706632)], [(7.0, 6.196152422706632), (7.0, 9.660254037844387), (10.0, 11.392304845413264), (13.0, 9.660254037844387), (13.0, 6.196152422706632), (10.0, 4.464101615137755), (7.0, 6.196152422706632)], [(-2.0, 11.392304845413264), (-2.0, 14.85640646055102), (1.0, 16.588457268119896), (4.0, 14.85640646055102), (4.0, 11.392304845413264), (1.0, 9.660254037844387), (-2.0, 11.392304845413264)], [(4.0, 11.392304845413264), (4.0, 14.85640646055102), (7.0, 16.588457268119896), (10.0, 14.85640646055102), (10.0, 11.392304845413264), (7.0, 9.660254037844387), (4.0, 11.392304845413264)]]",
+        "assert calculate_polygons(5,4,7,9,8)==[[(-11.0, -9.856406460551018), (-11.0, -0.6188021535170058), (-3.0, 4.0), (5.0, -0.6188021535170058), (5.0, -9.856406460551018), (-3.0, -14.475208614068023), (-11.0, -9.856406460551018)], [(5.0, -9.856406460551018), (5.0, -0.6188021535170058), (13.0, 4.0), (21.0, -0.6188021535170058), (21.0, -9.856406460551018), (13.0, -14.475208614068023), (5.0, -9.856406460551018)], [(21.0, -9.856406460551018), (21.0, -0.6188021535170058), (29.0, 4.0), (37.0, -0.6188021535170058), (37.0, -9.856406460551018), (29.0, -14.475208614068023), (21.0, -9.856406460551018)], [(-3.0, 4.0), (-3.0, 13.237604307034012), (5.0, 17.856406460551018), (13.0, 13.237604307034012), (13.0, 4.0), (5.0, -0.6188021535170058), (-3.0, 4.0)], [(13.0, 4.0), (13.0, 13.237604307034012), (21.0, 17.856406460551018), (29.0, 13.237604307034012), (29.0, 4.0), (21.0, -0.6188021535170058), (13.0, 4.0)], [(-11.0, 17.856406460551018), (-11.0, 27.09401076758503), (-3.0, 31.712812921102035), (5.0, 27.09401076758503), (5.0, 17.856406460551018), (-3.0, 13.237604307034012), (-11.0, 17.856406460551018)], [(5.0, 17.856406460551018), (5.0, 27.09401076758503), (13.0, 31.712812921102035), (21.0, 27.09401076758503), (21.0, 17.856406460551018), (13.0, 13.237604307034012), (5.0, 17.856406460551018)], [(21.0, 17.856406460551018), (21.0, 27.09401076758503), (29.0, 31.712812921102035), (37.0, 27.09401076758503), (37.0, 17.856406460551018), (29.0, 13.237604307034012), (21.0, 17.856406460551018)], [(-3.0, 31.712812921102035), (-3.0, 40.95041722813605), (5.0, 45.569219381653056), (13.0, 40.95041722813605), (13.0, 31.712812921102035), (5.0, 27.09401076758503), (-3.0, 31.712812921102035)], [(13.0, 31.712812921102035), (13.0, 40.95041722813605), (21.0, 45.569219381653056), (29.0, 40.95041722813605), (29.0, 31.712812921102035), (21.0, 27.09401076758503), (13.0, 31.712812921102035)]]",
+        "assert calculate_polygons(9,6,4,3,2)==[[(5.0, 2.5358983848622456), (5.0, 4.8452994616207485), (7.0, 6.0), (9.0, 4.8452994616207485), (9.0, 2.5358983848622456), (7.0, 1.3811978464829942), (5.0, 2.5358983848622456)], [(7.0, 6.0), (7.0, 8.309401076758503), (9.0, 9.464101615137753), (11.0, 8.309401076758503), (11.0, 6.0), (9.0, 4.8452994616207485), (7.0, 6.0)]]"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 12,
+      "mbpp_index": 650,
+      "task_id": 651,
+      "text": "Write a function to check if one tuple is a subset of another tuple.",
+      "test_list": [
+        "assert check_subset((10, 4, 5, 6), (5, 10)) == True",
+        "assert check_subset((1, 2, 3, 4), (5, 6)) == False",
+        "assert check_subset((7, 8, 9, 10), (10, 8)) == True"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 13,
+      "mbpp_index": 537,
+      "task_id": 538,
+      "text": "Write a python function to convert a given string list to a tuple.",
+      "test_list": [
+        "assert string_list_to_tuple((\"python 3.0\")) == ('p', 'y', 't', 'h', 'o', 'n', '3', '.', '0')",
+        "assert string_list_to_tuple((\"bigdata\")) == ('b', 'i', 'g', 'd', 'a', 't', 'a')",
+        "assert string_list_to_tuple((\"language\")) == ('l', 'a', 'n', 'g', 'u', 'a', 'g','e')"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 14,
+      "mbpp_index": 666,
+      "task_id": 667,
+      "text": "Write a python function to count number of vowels in the string.",
+      "test_list": [
+        "assert Check_Vow('corner','AaEeIiOoUu') == 2",
+        "assert Check_Vow('valid','AaEeIiOoUu') == 2",
+        "assert Check_Vow('true','AaEeIiOoUu') ==2"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 15,
+      "mbpp_index": 20,
+      "task_id": 21,
+      "text": "Write a function to find m number of multiples of n.",
+      "test_list": [
+        "assert multiples_of_num(4,3)== [3,6,9,12]",
+        "assert multiples_of_num(2,5)== [5,10]",
+        "assert multiples_of_num(9,2)== [2,4,6,8,10,12,14,16,18]"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 16,
+      "mbpp_index": 549,
+      "task_id": 550,
+      "text": "Write a python function to find the maximum element in a sorted and rotated array.",
+      "test_list": [
+        "assert find_Max([2,3,5,6,9],0,4) == 9",
+        "assert find_Max([3,4,5,2,1],0,4) == 5",
+        "assert find_Max([1,2,3],0,2) == 3"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 17,
+      "mbpp_index": 469,
+      "task_id": 470,
+      "text": "Write a function to find the pairwise addition of the elements of the given tuples.",
+      "test_list": [
+        "assert add_pairwise((1, 5, 7, 8, 10)) == (6, 12, 15, 18)",
+        "assert add_pairwise((2, 6, 8, 9, 11)) == (8, 14, 17, 20)",
+        "assert add_pairwise((3, 7, 9, 10, 12)) == (10, 16, 19, 22)"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 18,
+      "mbpp_index": 626,
+      "task_id": 627,
+      "text": "Write a python function to find the smallest missing number from the given array.",
+      "test_list": [
+        "assert find_First_Missing([0,1,2,3],0,3) == 4",
+        "assert find_First_Missing([0,1,2,6,9],0,4) == 3",
+        "assert find_First_Missing([2,3,5,8,9],0,4) == 0"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 19,
+      "mbpp_index": 408,
+      "task_id": 409,
+      "text": "Write a function to find the minimum product from the pairs of tuples within a given list.",
+      "test_list": [
+        "assert min_product_tuple([(2, 7), (2, 6), (1, 8), (4, 9)] )==8",
+        "assert min_product_tuple([(10,20), (15,2), (5,10)] )==30",
+        "assert min_product_tuple([(11,44), (10,15), (20,5), (12, 9)] )==100"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 20,
+      "mbpp_index": 688,
+      "task_id": 689,
+      "text": "## write a function to find the minimum number of jumps to reach the end of the array for the given array of integers where each element represents the max number of steps that can be made forward from that element. > indented block > indented block",
+      "test_list": [
+        "assert min_jumps([1, 3, 6, 1, 0, 9], 6) == 3",
+        "assert min_jumps([1, 3, 5, 8, 9, 2, 6, 7, 6, 8, 9], 11) == 3",
+        "assert min_jumps([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 11) == 10"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 21,
+      "mbpp_index": 934,
+      "task_id": 935,
+      "text": "Write a function to calculate the sum of series 1\u00b2+2\u00b2+3\u00b2+\u2026.+n\u00b2.",
+      "test_list": [
+        "assert series_sum(6)==91",
+        "assert series_sum(7)==140",
+        "assert series_sum(12)==650"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 22,
+      "mbpp_index": 594,
+      "task_id": 595,
+      "text": "Write a python function to count minimum number of swaps required to convert one binary string to another.",
+      "test_list": [
+        "assert min_Swaps(\"1101\",\"1110\") == 1",
+        "assert min_Swaps(\"111\",\"000\") == \"Not Possible\"",
+        "assert min_Swaps(\"111\",\"110\") == \"Not Possible\""
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 23,
+      "mbpp_index": 971,
+      "task_id": 972,
+      "text": "Write a function to concatenate the given two tuples to a nested tuple.",
+      "test_list": [
+        "assert concatenate_nested((3, 4), (5, 6)) == (3, 4, 5, 6)",
+        "assert concatenate_nested((1, 2), (3, 4)) == (1, 2, 3, 4)",
+        "assert concatenate_nested((4, 5), (6, 8)) == (4, 5, 6, 8)"
+      ],
+      "test_setup_code": ""
+    },
+    {
+      "presentation_order": 24,
+      "mbpp_index": 831,
+      "task_id": 832,
+      "text": "Write a function to extract the maximum numeric value from a string by using regex.",
+      "test_list": [
+        "assert extract_max('100klh564abc365bg') == 564",
+        "assert extract_max('hello300how546mer231') == 546",
+        "assert extract_max('its233beenalong343journey234') == 343"
+      ],
+      "test_setup_code": ""
+    }
+  ]
+}
