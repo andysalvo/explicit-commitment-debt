@@ -1,0 +1,53 @@
+{
+  "alpha": 0.01,
+  "condition_0": {
+    "descriptive": {
+      "max": 6.0,
+      "mean": 0.2572533849129594,
+      "median": 0,
+      "min": 0,
+      "n": 517,
+      "p25": 0,
+      "p75": 0,
+      "stdev": 0.7210368901227889
+    },
+    "exclusion_rate": 0.015238095238095238,
+    "n_excluded": 8,
+    "n_included": 517,
+    "n_total": 525
+  },
+  "condition_1": {
+    "descriptive": {
+      "max": 9.0,
+      "mean": 0.1727447216890595,
+      "median": 0,
+      "min": 0,
+      "n": 521,
+      "p25": 0,
+      "p75": 0,
+      "stdev": 0.8083691017713548
+    },
+    "exclusion_rate": 0.007619047619047619,
+    "n_excluded": 4,
+    "n_included": 521,
+    "n_total": 525
+  },
+  "decision": {
+    "hypothesis_confirmed": false,
+    "median_ratio_below_threshold": false,
+    "p_significant_at_alpha": true,
+    "verdict": "INCONCLUSIVE_REPORTED_AS_NEGATIVE"
+  },
+  "max_exclusion_rate": 0.2,
+  "median_ratio_threshold": 0.75,
+  "min_traces_per_condition": 500,
+  "schema_version": "1",
+  "script_self_hash": "0f3cf9d4512be12d618a7bf01ba0c5f7f7d2c79e919d03a05583429024c046f2",
+  "test": {
+    "median_ratio": Infinity,
+    "name": "two-tailed Mann-Whitney U",
+    "p_value": 0.00016712318684067388,
+    "rank_biserial_r": -0.07517903748556742,
+    "u_statistic": 144803.5
+  }
+}
